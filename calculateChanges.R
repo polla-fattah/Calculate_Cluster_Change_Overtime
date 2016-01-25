@@ -2,6 +2,9 @@ require(mcclust)
 require(pROC)
 require(clv)
 
+#setwd('/path/to/generateData.R')
+source('generateData.R')
+
 
 Rand <- function(clust1, clust2) clv.Rand(std.ext(clust1, clust2))
 Jaccard <- function(clust1, clust2) clv.Jaccard(std.ext(clust1, clust2))
@@ -12,10 +15,8 @@ AUC <- function(clust1, clust2) multiclass.roc(clust1, clust2)$auc[1]
 main <- function(){
   set.seed(123)
 
-  allData <<- read.csv(file.choose(T))
-  usefulData <<- allData[,c(2:6)]
-  print(head(usefulData))
-  
+  allData <<- generateData(500)#read.csv(file.choose(T))
+
   PERIODS <- max(allData$period)
 
   resultRand <<- c()
@@ -25,11 +26,11 @@ main <- function(){
   resultAUC <<- c()
 
   lables <<- allData[which(allData$period == 1), 1]
-  data1 <- usefulData[which(usefulData$period == 1), -c(1,2)]
+  data1 <- allData[which(allData$period == 1), -c(1,2)]
   clusters1 <<- kmeans(data1, 4)$cluster
   
   for(period in 2:PERIODS){
-    data <- usefulData[which(usefulData$period == period), -c(1,2)]
+    data <- allData[which(allData$period == period), -c(1,2)]
     clusters <<- kmeans(data, 4)$cluster
     
     resultRand[period-1] <<- Rand(clusters1, clusters)
@@ -43,10 +44,10 @@ main <- function(){
   x = 1:(PERIODS - 1)
   print(resultRand)
   
-  plot(x, resultRand, pch = 16, ylim=c(0.3, 0.8), xlab = 'time points', ylab = '', xaxt = "n")
+  plot(x, resultRand, pch = 16, ylim=c(0.3, 1), xlab = 'time points', ylab = '', xaxt = "n")
   axis(side = 1, 
-       at = c(1, 4, 9, 14, 19,24), 
-       labels = c('2', '5', '10', '15', '20', '25'),
+       at = c(1, 4, 9, 14, 19), 
+       labels = c('2', '5', '10', '15', '20'),
        tck=-.05)
   lines(resultRand)
   
@@ -64,8 +65,8 @@ main <- function(){
   lines(resultAUC)
   abline(lm(resultAUC~x), lwd=2)
   
-  legend('topright', c('Rand',  'VI','AUC' ), #'Jaccard', 'FM',
-          pch=c(16,  4, 0), bty='n', cex=.75) # 1, 2,
+  legend('topright', c('Rand', 'Jaccard', 'FM', 'VI','AUC' ),
+          pch=c(16, 1, 2, 4, 0), bty='n', cex=.75)
   
 }
 main()
