@@ -1,5 +1,13 @@
 require(mlbench)
-
+#generates itemsets then changes them by jumping items from one cluster into another
+#Parameters:
+#n: number of items
+#cl: number of clusters
+#r: radius of cluster
+#sd: standard deviation of items' distribution
+#periods: number of time points
+#nm: Number of items which must jump from one time point to another. 
+#      if NULL then it will be random between 1 and 0
 generateData <- function(n=500, cl=4, r=6, sd=1.5, periods=20, nm=NULL){
   set.seed(123)
   if (is.null(nm)){
@@ -15,6 +23,11 @@ generateData <- function(n=500, cl=4, r=6, sd=1.5, periods=20, nm=NULL){
   }
   return (allData)
 }
+# creates next time point of data based on the previous data set and the number of items should be jumped
+# data: previous time point dataset. it also introduce small randomness by changing the 
+# possition of items in the same cluster.
+#cl: number of clusters
+#nm: number of jump
 mutateData <- function(data,cl, nm){
   data$period <- data$period[1] + 1
   lenDat <- length(data[,1])
@@ -32,6 +45,11 @@ mutateData <- function(data,cl, nm){
   plot(data$x, data$y, col=data$idtyp)
   return (data)
 }
+# Creates the first dataset in a Cartesian  coordinate.
+#n: number of items
+#cl: number of clusters
+#r: radius of cluster
+#sd: standard deviation of items' distribution
 initialData <- function(n, cl, r, sd){
   set.seed(138)
   p <- mlbench.2dnormals(n, cl, r, sd)
