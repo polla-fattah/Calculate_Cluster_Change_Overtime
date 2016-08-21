@@ -17,10 +17,17 @@ generateData <- function(n=500, cl=4, r=6, sd=1.5, periods=20, nm=NULL){
   allData <- oldData
   periods <- periods - 1
   for( i in 1:periods){
+#    par(mar = c(3,3,1,1)) ## default is c(5,4,4,2) + 0.1
+#    plot(oldData$x, oldData$y, col=oldData$idtyp, pch=oldData$idtyp, xlab = 'X', 
+#        ylab = 'Y', mgp = c(2, 1, 0))
+    
     newData <- mutateData(oldData, cl, nm[i])
     allData <- merge(allData, newData, all=TRUE, sort=FALSE)
     oldData <- newData
   }
+#  par(mar = c(3,3,1,1)) ## default is c(5,4,4,2) + 0.1
+#  plot(oldData$x, oldData$y, col=oldData$idtyp, pch=oldData$idtyp, xlab = 'X', 
+#       ylab = 'Y', mgp = c(2, 1, 0))
   return (allData)
 }
 # creates next time point of data based on the previous data set and the number of items should be jumped
@@ -42,7 +49,6 @@ mutateData <- function(data,cl, nm){
   
   data$x <- data$x + data$x * runif(lenDat, 0.01, 0.02)
   data$y <- data$y + data$y * runif(lenDat, 0.01, 0.02)
-  plot(data$x, data$y, col=data$idtyp)
   return (data)
 }
 # Creates the first dataset in a Cartesian  coordinate.
@@ -53,7 +59,7 @@ mutateData <- function(data,cl, nm){
 initialData <- function(n, cl, r, sd){
   set.seed(138)
   p <- mlbench.2dnormals(n, cl, r, sd)
-  plot(p)
+
   idtyp <- as.integer(p$classes)
   idsubj <- 1:n
   period <- rep(1, n)
